@@ -1,0 +1,6 @@
+data/
+config.py
+.DS_Store
+.venv/
+__init__.py
+__pycache__/
