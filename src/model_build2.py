@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 # %matplotlib inline
+import itertools as itt
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
@@ -65,11 +66,14 @@ class Reservations(object):
         num_cols = ['cars_available', 'rolling_avg_spend', 'prop_focus', 'prop_fusion', 'prop_escape',
                     'prop_explorer', 'prop_edge', 'prop_mustang', 'prop_cmax_hybrid', 'prop_fiesta',
                     'prop_other', 'prop_my_2015', 'prop_my_2016','prop_my_2017']
-        cat_cols = ['region', 'season']
-        features = num_cols + cat_cols
+        cat_cols = ['region', 'season', 'day_of_week']
+        dummy_list = []
         for var in cat_cols:
-            label = LabelEncoder()
-            df[var] = label.fit_transform(df[var].astype('str'))
+            x = pd.get_dummies(df[var])
+            dummy_list.append(list(x))
+            df = pd.concat([df, x], axis=1)
+        dummy_list = list(itt.chain.from_iterable(dummy_list))
+        features = num_cols + dummy_list
         self.date = df['date_start']
         self.X = df[features].fillna(0)
         self.y = df[target].values.ravel()

@@ -1,5 +1,6 @@
 data/
 config.py
+model.ipynb
 .DS_Store
 .venv/
 __init__.py

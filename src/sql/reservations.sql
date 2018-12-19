@@ -3,7 +3,7 @@ with
 		select calendar_date_start as date_start
 		, calendar_date_end as date_end
 		, calendar_week_start as week_start
-		, to_char(calendar_date_start, 'Day') as day_of_week
+		, to_char(calendar_date_start, 'day') as day_of_week
 		, to_char(date_trunc('month', calendar_date_start), 'Mon') as month
 		from public.calendar_dates
 		where calendar_date_start >= '1/1/2018'::date
@@ -74,7 +74,8 @@ with
 -- 		left join campaign_spend c2 on c2.week_start = d.week_start and c2.region = a.region
 	)
 
-select date_start, region
+select date_start, day_of_week
+, replace(lower(region), ' ', '_') as region 
 , extract(day from date_start) as day_num
 , to_char(week_start, 'w') as week_num
 , month
@@ -94,4 +95,4 @@ select date_start, region
 , count(distinct case when model_year = 2016 then vin else null end) as my_2016
 , count(distinct case when model_year = 2017 then vin else null end) as my_2017
 from join_tables
-group by 1,2,3,4,5,6
+group by 1,2,3,4,5,6,7
