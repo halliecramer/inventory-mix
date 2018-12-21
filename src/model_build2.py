@@ -63,9 +63,9 @@ class Reservations(object):
             df = pd.merge(df, new_prop, left_index=True, right_index=True)
 
         target = ['proportion_reserved']
-        num_cols = ['cars_available', 'rolling_avg_spend', 'prop_focus', 'prop_fusion', 'prop_escape',
-                    'prop_explorer', 'prop_edge', 'prop_mustang', 'prop_cmax_hybrid', 'prop_fiesta',
-                    'prop_other', 'prop_my_2015', 'prop_my_2016','prop_my_2017']
+        num_cols = ['cars_available', 'rolling_avg_spend', 'prop_sedan', 'prop_suv',
+                    'prop_hatchback', 'prop_wagon', 'prop_sports_car', 'prop_pickup_truck',
+                    'prop_my_2015', 'prop_my_2016','prop_my_2017']
         cat_cols = ['region', 'season', 'day_of_week']
         dummy_list = []
         for var in cat_cols:
