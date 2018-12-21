@@ -34,7 +34,7 @@ class Reservations(object):
         self.X_test = None
         self.y_test = None
         self.y_pred = None
-        self.df = None
+        self.orig = None
         self.features = None
 
     def _get_data(self):
@@ -60,8 +60,7 @@ class Reservations(object):
         rolling_avg_spend.columns = ['date_start','region','rolling_avg_spend']
         df = pd.merge(df, rolling_avg_spend, how='left', on=['date_start','region'])
         df['year'] = df['date_start'].apply(lambda x: x.year)
-        self.df = df
-        model = df
+        self.orig = df.copy()
         target = ['is_reserved']
         num_cols = ['rolling_avg_spend',
                     # 'focus_count', 'fusion_count', 'fiesta_count', 'escape_count',
@@ -72,11 +71,11 @@ class Reservations(object):
         self.features = num_cols + cat_cols
         for var in cat_cols:
                 label = LabelEncoder()
-                model[var] = label.fit_transform(model[var].astype('str'))
+                df[var] = label.fit_transform(df[var].astype('str'))
         for var in date_cols:
-            model[var] = model[var].notnull()
-        self.X = model[self.features].fillna(0)
-        self.y = model[target].values.ravel()
+            df[var] = df[var].notnull()
+        self.X = df[self.features].fillna(0)
+        self.y = df[target].values.ravel()
 
     def _split_data(self, oversample=1, scale=1):
         X_train, X_test, y_train, y_test = train_test_split(self.X, self.y,
@@ -214,7 +213,7 @@ class Reservations(object):
             print ("\nkey:")
             print (" TN   FP ")
             print (" FN   TP ")
-            inventory_scores = pd.concat([self.df[self.features], pd.Series(self.y), pd.Series(self.y_pred), pd.Series(self.scores)], axis=1)
+            inventory_scores = pd.concat([self.orig[self.features], pd.Series(self.y), pd.Series(self.y_pred), pd.Series(self.scores)], axis=1)
             inventory_scores.columns = self.features + ['is_reserved', 'predict_reserved', 'proba_reserved']
             performance = inventory_scores.groupby(['region','model','model_year','alg_trim','color'])['proba_reserved'].agg(['mean'])
             print("\n20 Best performing cars: ")
