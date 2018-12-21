@@ -28,7 +28,7 @@ with
 		select 'Available' as on_website, c.vin,
 			convert_timezone('America/Los_angeles', start_at) as start_at_pt,
 			convert_timezone('America/Los_angeles', end_at) as end_at_pt,
-			c.model_year, c.make, c.model, c.alg_trim,
+			c.model_year, c.make, c.model, c.alg_trim, c.body_type,
 			c.display_color as color,
 			c.region_label as region
 		from rome.availability_histories a
@@ -60,7 +60,7 @@ with
 
 , join_tables as (
 		select d.*
-		, a.region, a.on_website
+		, a.region, a.on_website, a.body_type
 		, a.vin, a.make, a.model, a.model_year, a.alg_trim, a.color
 		, coalesce(r.is_reserved, 0) as is_reserved
 -- 		, c.spend as previous_week_spend
@@ -75,13 +75,19 @@ with
 	)
 
 select date_start, day_of_week
-, replace(lower(region), ' ', '_') as region 
+, replace(lower(region), ' ', '_') as region
 , extract(day from date_start) as day_num
 , to_char(week_start, 'w') as week_num
 , month
 , coalesce(daily_spend, 0) as daily_spend
 , count(distinct vin) as cars_available
 , sum(is_reserved) as reservations
+, count(distinct case when body_type = 'sedan' then vin else null end) as sedan
+, count(distinct case when body_type = 'suv' then vin else null end) as suv
+, count(distinct case when body_type = 'hatchback' then vin else null end) as hatchback
+, count(distinct case when body_type = 'wagon' then vin else null end) as wagon
+, count(distinct case when body_type in ('convertible','coupe') then vin else null end) as sports_car
+, count(distinct case when body_type in ('supercab','supercrew') then vin else null end) as pickup_truck
 , count(distinct case when model = 'Focus' then vin else null end) as focus
 , count(distinct case when model = 'Fusion' then vin else null end) as fusion
 , count(distinct case when model = 'Escape' then vin else null end) as escape
