@@ -16,6 +16,7 @@ from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import GridSearchCV
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.calibration import calibration_curve
+import pickle
 import psycopg2
 import config
 from datetime import datetime
@@ -27,6 +28,7 @@ import sys
 class Reservations(object):
     def __init__(self):
         self.model = None
+        self.pickle = None
         self.X = None
         self.y = None
         self.X_train = None
@@ -34,7 +36,6 @@ class Reservations(object):
         self.X_test = None
         self.y_test = None
         self.y_pred = None
-        self.orig = None
         self.features = None
 
     def _get_data(self):
@@ -60,7 +61,6 @@ class Reservations(object):
         rolling_avg_spend.columns = ['date_start','region','rolling_avg_spend']
         df = pd.merge(df, rolling_avg_spend, how='left', on=['date_start','region'])
         df['year'] = df['date_start'].apply(lambda x: x.year)
-        self.orig = df.copy()
         target = ['is_reserved']
         num_cols = ['rolling_avg_spend',
                     # 'focus_count', 'fusion_count', 'fiesta_count', 'escape_count',
@@ -72,6 +72,9 @@ class Reservations(object):
         for var in cat_cols:
                 label = LabelEncoder()
                 df[var] = label.fit_transform(df[var].astype('str'))
+                if self.pickle:
+                    with open("saved_model/{0}_labels.pkl".format(var), 'wb') as f:
+                        pickle.dump(label, f)
         for var in date_cols:
             df[var] = df[var].notnull()
         self.X = df[self.features].fillna(0)
@@ -90,12 +93,16 @@ class Reservations(object):
             scaler.fit(X_train)
             X_train = scaler.transform(X_train)
             X_test = scaler.transform(X_test)
+            if self.pickle:
+                with open("saved_model/scaler.pkl", 'wb') as f:
+                    pickle.dump(scaler, f)
         return X_train, X_test, y_train, y_test
 
     def fit_model(self, model='rf', oversample=True, scale=False, n_estimators=100,
-                  info=True, roc=False, max_depth=45, learning_rate=0.1,
+                  info=True, roc=False, reliability=False, max_depth=45, learning_rate=0.1,
                   max_features='auto', min_samples_leaf=10,
-                  C=0.1, gamma=1, kernel='rbf'):
+                  C=0.1, gamma=1, kernel='rbf', pickle=0):
+        self.pickle = pickle
         self._get_data()
         self.X_train, self.X_test, self.y_train, self.y_test = self._split_data(oversample=oversample, scale=scale)
         if model == 'rf':
@@ -134,6 +141,10 @@ class Reservations(object):
             print(feature_df.sort_values('Value', ascending=False))
         if roc:
             self._plot_roc()
+        if reliability:
+            self._plot_reliability()
+        if self.pickle:
+            self.pickle_model()
 
     def _plot_roc(self):
         probas_ = self.model.predict_proba(self.X_test)[:, 1]
@@ -193,34 +204,6 @@ class Reservations(object):
         plt.legend(loc='upper center', ncol=2)
         plt.show()
 
-    def make_predictions(self, calibrate_probas=1, p=1):
-        self.fit_model()
-        if calibrate_probas:
-            calibrated = CalibratedClassifierCV(self.model, method='sigmoid', cv='prefit')
-            calibrated.fit(self.X, self.y)
-            self.scores = calibrated.predict_proba(self.X)[:, 1]
-        else:
-            self.scores = self.model.predict_proba(self.X)[:, 1]
-        self.y_pred = self.model.predict(self.X)
-        if p == 1:
-            print("\nMETRICS")
-            print("Model recall: {}".format(recall_score(self.y, self.y_pred)))
-            print("Model precision: {}".format(precision_score(self.y, self.y_pred)))
-            print("Model accuracy: {}".format(self.model.score(self.X, self.y)))
-            print("Model f1 score: {}".format(f1_score(self.y, self.y_pred)))
-            print ("\nCONFUSION MATRIX")
-            print (confusion_matrix(self.y, self.y_pred))
-            print ("\nkey:")
-            print (" TN   FP ")
-            print (" FN   TP ")
-            inventory_scores = pd.concat([self.orig[self.features], pd.Series(self.y), pd.Series(self.y_pred), pd.Series(self.scores)], axis=1)
-            inventory_scores.columns = self.features + ['is_reserved', 'predict_reserved', 'proba_reserved']
-            performance = inventory_scores.groupby(['region','model','model_year','alg_trim','color'])['proba_reserved'].agg(['mean'])
-            print("\n20 Best performing cars: ")
-            print(performance.sort_values(by='mean',ascending=False).head(20))
-            print("\n20 Worst performing cars: ")
-            print(performance.sort_values(by='mean',ascending=True).head(20))
-
     def grid_search(self, model='gb', oversample=False, scale=False, scoring='f1'):
         self._get_data()
         self.X_train, self.X_test, self.y_train, self.y_test = self._split_data(oversample=oversample, scale=scale)
@@ -246,12 +229,14 @@ class Reservations(object):
         print("\nBest Params:")
         print(CV.best_params_)
 
+    def pickle_model(self):
+        with open("saved_model/model.pkl", 'wb') as f:
+            pickle.dump(self.model, f)
+
 if __name__ == '__main__':
     try:
         model = Reservations()
-        # model.fit_model(model='rf', info=True, roc=False, oversample=True, scale=False)
-        model.make_predictions(calibrate_probas=True, p=True)
-        # model._plot_reliability(oversample=True, scale=False, bins=10, calibrate_probas=True)
+        model.fit_model(model='rf', info=True, roc=True, reliability=True, oversample=True, scale=False)
 
     except IndexError:
         print('Expected: python model_build.py')
