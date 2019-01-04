@@ -56,7 +56,10 @@ class Reservations(object):
                                             else ('spring' if np.isin(x, ['Mar','Apr','May']) == True
                                             else ('summer' if np.isin(x, ['Jun','Jul','Aug']) == True
                                             else 'fall')))
-        listvar = ['focus','fusion','escape','explorer','edge','mustang','cmax_hybrid','fiesta','other','my_2015','my_2016','my_2017']
+        listvar = ['focus','fusion','escape','explorer','edge','mustang',
+                   'cmax_hybrid','fiesta','other',
+                   'sedan','suv','hatchback','wagon','sports_car','pickup_truck',
+                   'my_2015','my_2016','my_2017']
         for var in listvar:
             new_prop = df[var] / df['cars_available']
             new_prop = pd.DataFrame(new_prop, columns=['prop_' + str(var)])
@@ -65,7 +68,7 @@ class Reservations(object):
         target = ['proportion_reserved']
         num_cols = ['cars_available', 'rolling_avg_spend', 'prop_sedan', 'prop_suv',
                     'prop_hatchback', 'prop_wagon', 'prop_sports_car', 'prop_pickup_truck',
-                    'prop_my_2015', 'prop_my_2016','prop_my_2017']
+                    'prop_my_2015', 'prop_my_2016', 'prop_my_2017']
         cat_cols = ['region', 'season', 'day_of_week']
         dummy_list = []
         for var in cat_cols:

@@ -4,6 +4,7 @@ with
 		, calendar_date_end as date_end
 		, calendar_week_start as week_start
 		, to_char(calendar_date_start, 'day') as day_of_week
+		, case when to_char(calendar_date_start, 'day') in ('saturday', 'sunday') then 1 else 0 end as is_weekend
 		, to_char(date_trunc('month', calendar_date_start), 'Mon') as month
 		from public.calendar_dates
 		where calendar_date_start >= '1/1/2018'::date
@@ -29,6 +30,7 @@ with
 			convert_timezone('America/Los_angeles', start_at) as start_at_pt,
 			convert_timezone('America/Los_angeles', end_at) as end_at_pt,
 			c.model_year, c.make, c.model, c.alg_trim, c.body_type,
+			c.trim, c.drivetrain,
 			c.display_color as color,
 			c.region_label as region
 		from rome.availability_histories a
@@ -58,20 +60,37 @@ with
 			and cs.start_at_pt::date >= '1/1/2018'::date
 	)
 
+,	vehicle_pricing as (
+		select f.fixed_pricing_schedule_id
+		, f.id as fixed_pricing_id
+		, coalesce(f.total_access_fee, f.vehicle_access_fee)/100 as vehicle_fee
+		, model_year || ' ' || make || ' ' || model || ' ' || alg_trim as car_long_name
+		, s.version
+		, convert_timezone('America/Los_angeles', s.created_at) as pricing_start_pt
+		, lead(convert_timezone('America/Los_angeles', s.created_at))
+				over (partition by model_year, make, model, alg_trim order by s.created_at) as pricing_end_pt
+		from rome.fixed_pricing_items f
+		left join rome.fixed_pricing_schedules s on s.id = f.fixed_pricing_schedule_id
+		where period = 0
+			and s.version is not null
+	)
+
 , join_tables as (
 		select d.*
 		, a.region, a.on_website, a.body_type
 		, a.vin, a.make, a.model, a.model_year, a.alg_trim, a.color
+		, a.trim, a.drivetrain
+		, case when d.date_start < '2/28/2018'::date then 0 else 1 end as is_canvas_2_0
 		, coalesce(r.is_reserved, 0) as is_reserved
--- 		, c.spend as previous_week_spend
 		, count(a.vin) over (partition by a.region, date_start) as number_available_cars
 		, c.spend as daily_spend
--- 		, c2.spend as current_week_spend
+		, v.vehicle_fee
 		from dates d
 		left join availabilities a on a.start_at_pt < date_end and a.end_at_pt > date_start
 		left join reservations r on r.vin = a.vin and r.reserved_date = d.date_start
 		left join campaign_spend c on c.campaign_date = d.date_start and c.region = a.region
--- 		left join campaign_spend c2 on c2.week_start = d.week_start and c2.region = a.region
+		left join vehicle_pricing v on v.car_long_name = a.model_year || ' ' || a.make || ' ' || a.model || ' ' || a.alg_trim
+			and v.pricing_start_pt::date <= d.date_start and v.pricing_end_pt::date > d.date_start
 	)
 
 select date_start, day_of_week

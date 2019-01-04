@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 # %matplotlib inline
+from pandas.tseries.holiday import USFederalHolidayCalendar as hcal
 from sklearn.preprocessing import LabelEncoder
 import random
 from sklearn.preprocessing import StandardScaler
@@ -12,6 +13,7 @@ from sklearn.calibration import calibration_curve
 import pickle
 import psycopg2
 import config
+import itertools as itt
 from datetime import datetime
 from psycopg2.extras import execute_values
 import os
@@ -53,33 +55,46 @@ class PredictScores(object):
         rolling_avg_spend = pd.DataFrame(df.groupby(['date_start','region'])['daily_spend'].mean().rolling(window=21, min_periods=1).mean()).reset_index()
         rolling_avg_spend.columns = ['date_start','region','rolling_avg_spend']
         df = pd.merge(df, rolling_avg_spend, how='left', on=['date_start','region'])
+        holidays = hcal().holidays(start='2017-05-05', end='2023-1-01')
+        df['is_holiday'] = df['date_start'].apply(lambda x: 1 if x in holidays else 0)
         df['year'] = df['date_start'].apply(lambda x: x.year)
+        df['season'] = df['month'].apply(lambda x: 'winter' if np.isin(x, ['Dec','Jan','Feb']) == True
+                                            else ('spring' if np.isin(x, ['Mar','Apr','May']) == True
+                                            else ('summer' if np.isin(x, ['Jun','Jul','Aug']) == True
+                                            else 'fall')))
+        df['is_apr_thru_jul'] = df['month'].apply(lambda x: 1 if x in ['Apr','May','Jun','Jul'] else 0)
+        df['is_neutral_color'] = df['color'].apply(lambda x: 1 if x in ['White','Grey','Silver','Black'] else 0)
         self.orig = df.copy()
         target = ['is_reserved']
-        num_cols = ['rolling_avg_spend',
+        num_cols = ['rolling_avg_spend', 'number_available_cars', 'is_canvas_2_0',
                     # 'focus_count', 'fusion_count', 'fiesta_count', 'escape_count',
                     # 'c-max hybrid_count', 'explorer_count', 'edge_count', 'mustang_count',
-                    'number_available_cars']
-        cat_cols = ['region', 'day_of_week', 'month', 'model', 'model_year', 'alg_trim', 'color', 'year']
-        date_cols = ['date_start']
-        self.features = num_cols + cat_cols
+                    'is_weekend', 'is_holiday', 'vehicle_fee', 'is_neutral_color',
+                    'min_vehicle_fee', 'is_apr_thru_jul']
+        cat_cols = ['region', 'model', 'model_year']
+        other_cols = ['date_start', 'alg_trim', 'make']
+        dummy_list = []
         for var in cat_cols:
-            with open("saved_model/{0}_labels.pkl".format(var), 'rb') as f:
-                label = pickle.load(f)
-            # label_classes = label.classes_.tolist()
-            # df[var] = df[var].map(lambda s: '<unknown>' if s not in label_classes else s)
-            # bisect.insort_left(label_classes, '<unknown>')
-            # label.classes_ = label_classes
-            df[var] = label.transform(df[var].astype('str'))
-        for var in date_cols:
-            df[var] = df[var].notnull()
+            x = pd.get_dummies(df[var])
+            dummy_list.append(list(x))
+            df = pd.concat([df, x], axis=1)
+        dummy_list = list(itt.chain.from_iterable(dummy_list))
+        self.features = num_cols + cat_cols + other_cols
+        model_features = num_cols + dummy_list
+        # self.features = num_cols + cat_cols
+        # for var in cat_cols:
+        #     with open("saved_model/{0}_labels.pkl".format(var), 'rb') as f:
+        #         label = pickle.load(f)
+        #     df[var] = label.transform(df[var].astype('str'))
+        # for var in date_cols:
+        #     df[var] = df[var].notnull()
         self.y = df[target].values.ravel()
         if scale:
             with open("saved_model/scaler.pkl", 'rb') as f:
                 scaler = pickle.load(f)
             self.X = scaler.transform(self.X)
         else:
-            self.X = df[self.features].fillna(0)
+            self.X = df[model_features].fillna(0)
 
     def make_predictions(self, calibrate_probas=1, p=1, scale=0):
         self._import_model()
@@ -104,11 +119,11 @@ class PredictScores(object):
             print (" FN   TP ")
             inventory_scores = pd.concat([self.orig[self.features], pd.Series(self.y), pd.Series(self.y_pred), pd.Series(self.scores)], axis=1)
             inventory_scores.columns = self.features + ['is_reserved', 'predict_reserved', 'proba_reserved']
-            groupby_cols = ['region', 'model', 'model_year', 'alg_trim', 'color']
-            performance = inventory_scores.groupby(groupby_cols)['proba_reserved'].agg(['mean'])
-            print("\n20 Best performing cars: ")
+            groupby_cols = ['region', 'model', 'model_year', 'alg_trim', 'is_neutral_color']
+            performance = inventory_scores[(inventory_scores['is_canvas_2_0']==1) & (inventory_scores['make']!='Lincoln')].groupby(groupby_cols)['proba_reserved'].agg(['mean'])
+            print("\n20 Highest Probabilities: ")
             print(performance.sort_values(by='mean',ascending=False).head(20))
-            print("\n20 Worst performing cars: ")
+            print("\n20 Lowest Probabilities: ")
             print(performance.sort_values(by='mean',ascending=True).head(20))
 
 if __name__ == '__main__':
