@@ -28,6 +28,11 @@ class PredictScores(object):
         self.y_pred = None
         self.orig = None
         self.features = None
+        self.con = psycopg2.connect(dbname=config.redshift['dbname'],
+                                    host=config.redshift['host'],
+                                    port=config.redshift['port'],
+                                    user=config.redshift['user'],
+                                    password=config.redshift['password'])
 
     def _import_model(self):
         with open("saved_model/model.pkl", 'rb') as f:
@@ -37,15 +42,10 @@ class PredictScores(object):
         '''Imports user data directly from redshift,
            formats, scales for scoring'''
 
-        with open('sql/inventory_mix.sql','r') as f:
+        with open('sql/logit_reservations.sql','r') as f:
             sql = f.read()
-        con = psycopg2.connect(dbname=config.redshift['dbname'],
-                                host=config.redshift['host'],
-                                port=config.redshift['port'],
-                                user=config.redshift['user'],
-                                password=config.redshift['password'])
-        df = pd.read_sql(sql, con)
-        con.close()
+        df = pd.read_sql(sql, self.con)
+        self.con.close()
         # model_list = ['Focus','Fusion','Fiesta','Escape','C-Max Hybrid','Explorer','Edge','Mustang']
         # for var in model_list:
         #     daily_counts = df[df['model']==var].groupby(['date_start','region'])['vin'].count().reset_index()
@@ -96,7 +96,7 @@ class PredictScores(object):
         else:
             self.X = df[model_features].fillna(0)
 
-    def make_predictions(self, calibrate_probas=1, p=1, scale=0):
+    def make_predictions(self, calibrate_probas=1, p=1, scale=0, print_csv=True):
         self._import_model()
         self._get_data()
         if calibrate_probas:
@@ -119,12 +119,61 @@ class PredictScores(object):
             print (" FN   TP ")
             inventory_scores = pd.concat([self.orig[self.features], pd.Series(self.y), pd.Series(self.y_pred), pd.Series(self.scores)], axis=1)
             inventory_scores.columns = self.features + ['is_reserved', 'predict_reserved', 'proba_reserved']
-            groupby_cols = ['region', 'model', 'model_year', 'alg_trim', 'is_neutral_color']
-            performance = inventory_scores[(inventory_scores['is_canvas_2_0']==1) & (inventory_scores['make']!='Lincoln')].groupby(groupby_cols)['proba_reserved'].agg(['mean'])
-            print("\n20 Highest Probabilities: ")
-            print(performance.sort_values(by='mean',ascending=False).head(20))
-            print("\n20 Lowest Probabilities: ")
-            print(performance.sort_values(by='mean',ascending=True).head(20))
+            if print_csv:
+                groupby_cols = ['model', 'model_year', 'alg_trim']
+                unique_months = inventory_scores['month'].unique()
+                unique_cities = inventory_scores['region'].unique()
+                with open('output.csv', 'w') as f:
+                    for y in unique_cities:
+                        print("\n{} Canvas 2.0 Best and Worst Performing Cars by Month".format(y), file=f)
+                        partition_scores = inventory_scores[inventory_scores['region']==y]
+                        for i in unique_months:
+                            performance = partition_scores[(partition_scores['month']==i) & (partition_scores['is_canvas_2_0']==1) & (partition_scores['make']!='Lincoln')].groupby(groupby_cols)['proba_reserved'].agg(['mean'])
+                            print("\n5 Highest Probabilities in {}".format(i), file=f)
+                            print(performance.sort_values(by='mean',ascending=False).head(5), file=f)
+                            print("\n5 Lowest Probabilities in {}".format(i), file=f)
+                            print(performance.sort_values(by='mean',ascending=True).head(5), file=f)
+            else:
+                groupby_cols = ['region', 'month', 'model', 'model_year', 'alg_trim', 'is_neutral_color']
+                performance = inventory_scores[(inventory_scores['is_canvas_2_0']==1) & (inventory_scores['make']!='Lincoln')].groupby(groupby_cols)['proba_reserved'].agg(['mean'])
+                print("\n10 Highest Probabilities: ")
+                print(performance.sort_values(by='mean',ascending=False).head(10))
+                print("\n10 Lowest Probabilities: ")
+                print(performance.sort_values(by='mean',ascending=True).head(10))
+            # reliability diagram
+            fop_uncalibrated, mpv_uncalibrated = calibration_curve(self.y, self.model.predict_proba(self.X)[:,1], n_bins=10, normalize=True)
+            fop_calibrated, mpv_calibrated = calibration_curve(self.y, self.scores, n_bins=10, normalize=True)
+            # plot perfectly calibrated
+            fig = plt.figure(1, figsize=(10, 10))
+            ax1 = plt.subplot2grid((3, 1), (0, 0), rowspan=2)
+            ax2 = plt.subplot2grid((3, 1), (2, 0))
+            ax1.plot([0, 1], [0, 1], linestyle='--')
+            # plot calibrated reliability
+            ax1.plot(mpv_uncalibrated, fop_uncalibrated, marker='.', color='blue', label='uncalibrated')
+            ax1.plot(mpv_calibrated, fop_calibrated, marker='.', color='green', label='calibrated')
+            ax2.hist(self.model.predict_proba(self.X)[:,1], range=(0, 1), bins=10, histtype="step", lw=2, color='blue', label='uncalibrated')
+            ax2.hist(self.scores, range=(0, 1), bins=10, histtype="step", lw=2, color='green', label='calibrated')
+
+            ax1.set_ylabel("Fraction of positives")
+            ax1.set_ylim([-0.05, 1.05])
+            # ax1.legend(loc="lower right")
+            ax1.set_title('Calibration plots  (reliability curve)')
+            ax2.set_xlabel("Mean predicted value")
+            ax2.set_ylabel("Count")
+            ax2.legend(loc="upper right", ncol=2)
+            plt.show()
+
+        # def output(self):
+        #     '''Appends data to a redshift table'''
+        #     insert_query = "insert into analytics_pipeline.traffic_score (model_version, score_timestamp, merged_id, score, prediction) values %s"
+        #     # scores = scores[:10]
+        #     model_version = ['model_{0}_day_activity_window'.format(self.activity_window)] * len(self.scores)
+        #     score_date = [datetime.now()] * len(self.scores)
+        #     new_rows = list(zip(model_version, score_date, self.users, self.scores, self.y_pred))
+        #     cur = self.con.cursor()
+        #     execute_values(cur, insert_query, new_rows)
+        #     self.con.commit()
+        #     self.con.close()
 
 if __name__ == '__main__':
     try:

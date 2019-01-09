@@ -1,0 +1,436 @@
+
+Los Angeles CANVAS 2.0 CAR PERFORMANCE BY MONTH
+
+5 Highest Probabilities in Dec
+                                            mean
+model_year model  alg_trim                      
+2016       Fiesta 5dr HB SE             0.746252
+2015       Escape 4dr Wgn S             0.694547
+           Fusion 4dr Sdn SE            0.602733
+           Escape 4dr Wgn Titanium 4WD  0.357624
+           Edge   4dr Wgn Sport AWD     0.263975
+
+5 Lowest Probabilities in Dec
+                                           mean
+model_year model    alg_trim                   
+2017       Explorer 4dr Wgn Base       0.004705
+2016       Explorer 4dr Wgn Base       0.005178
+                    4dr Wgn Sport 4WD  0.010814
+2015       Fusion   4dr Sdn Titanium   0.011118
+2016       Explorer 4dr Wgn XLT        0.011478
+
+5 Highest Probabilities in Apr
+                                   mean
+model_year model   alg_trim            
+2015       Fiesta  5dr HB SE   0.067597
+                   4dr Sdn SE  0.042431
+           Mustang 2dr Cpe     0.037631
+           Escape  4dr Wgn S   0.034613
+           Focus   4dr Sdn SE  0.033205
+
+5 Lowest Probabilities in Apr
+                                                  mean
+model_year model        alg_trim                      
+2015       Escape       4dr Wgn Titanium      0.005623
+                        4dr Wgn Titanium 4WD  0.006079
+           Edge         4dr Wgn Sport AWD     0.006465
+           Escape       4dr Wgn SE 4WD        0.006561
+           C-Max Hybrid 5dr HB SEL            0.007426
+
+5 Highest Probabilities in May
+                                   mean
+model_year model   alg_trim            
+2015       Focus   5dr HB SE   0.245555
+           Fusion  4dr Sdn S   0.223084
+           Focus   4dr Sdn SE  0.202769
+           Fiesta  4dr Sdn SE  0.201359
+           Mustang 2dr Cpe     0.155784
+
+5 Lowest Probabilities in May
+                                                  mean
+model_year model        alg_trim                      
+2015       C-Max Hybrid 5dr HB SEL            0.005969
+           Escape       4dr Wgn Titanium 4WD  0.013874
+                        4dr Wgn SE            0.015782
+                        4dr Wgn SE 4WD        0.016300
+           Explorer     4dr Wgn XLT           0.026011
+
+5 Highest Probabilities in Jun
+                                        mean
+model_year model  alg_trim                  
+2015       Focus  5dr HB SE         0.365974
+           Escape 4dr Wgn S         0.252285
+           Focus  4dr Sdn SE        0.246960
+           Escape 4dr Wgn Titanium  0.152200
+           Fiesta 5dr HB SE         0.149879
+
+5 Lowest Probabilities in Jun
+                                          mean
+model_year model    alg_trim                  
+2015       Fusion   4dr Sdn Titanium  0.019337
+           Explorer 4dr Wgn XLT       0.019938
+                    4dr Wgn Limited   0.021142
+           Mustang  2dr Cpe           0.030756
+           Escape   4dr Wgn SE 4WD    0.034226
+
+5 Highest Probabilities in Aug
+                                  mean
+model_year model  alg_trim            
+2015       Focus  4dr Sdn S   0.472208
+                  5dr HB SE   0.270802
+           Fiesta 5dr HB SE   0.231896
+           Escape 4dr Wgn S   0.166717
+           Fiesta 4dr Sdn SE  0.164803
+
+5 Lowest Probabilities in Aug
+                                           mean
+model_year model    alg_trim                   
+2017       Focus    4dr Sdn SE         0.005424
+2016       Fusion   4dr Sdn SE         0.005664
+2015       Edge     4dr Wgn Sport AWD  0.007745
+           Mustang  2dr Cpe EcoBoost   0.008776
+           Explorer 4dr Wgn Limited    0.010370
+
+5 Highest Probabilities in Oct
+                                      mean
+model_year model  alg_trim                
+2015       Fiesta 4dr Sdn SE      0.301482
+2016       Focus  4dr Sdn SE      0.217661
+2015       Focus  5dr HB SE       0.217269
+                  4dr Sdn SE      0.159403
+           Escape 4dr Wgn SE 4WD  0.149133
+
+5 Lowest Probabilities in Oct
+                                               mean
+model_year model        alg_trim                   
+2016       Explorer     4dr Wgn Sport 4WD  0.002765
+2017       Explorer     4dr Wgn Base       0.002789
+2016       Explorer     4dr Wgn XLT        0.003386
+           C-Max Hybrid 5dr HB SEL         0.007364
+2017       Focus        5dr HB SE          0.009239
+
+5 Highest Probabilities in Nov
+                                  mean
+model_year model  alg_trim            
+2016       Focus  4dr Sdn SE  0.628710
+           Fiesta 5dr HB SE   0.343946
+2015       Focus  4dr Sdn SE  0.292421
+                  5dr HB SE   0.285631
+           Fiesta 5dr HB SE   0.222211
+
+5 Lowest Probabilities in Nov
+                                               mean
+model_year model        alg_trim                   
+2016       C-Max Hybrid 5dr HB SEL         0.002253
+                        5dr HB SE          0.003963
+           Explorer     4dr Wgn Sport 4WD  0.006145
+2015       Edge         4dr Wgn SEL        0.006425
+2016       Explorer     4dr Wgn XLT        0.006542
+
+5 Highest Probabilities in Jan
+                                           mean
+model_year model    alg_trim                   
+2015       Fusion   4dr Sdn Titanium   0.002333
+           Edge     4dr Wgn SEL        0.001255
+2016       Explorer 4dr Wgn XLT        0.000830
+                    4dr Wgn Sport 4WD  0.000770
+2017       Explorer 4dr Wgn Base       0.000590
+
+5 Lowest Probabilities in Jan
+                                           mean
+model_year model    alg_trim                   
+2017       Explorer 4dr Wgn Base       0.000590
+2016       Explorer 4dr Wgn Sport 4WD  0.000770
+                    4dr Wgn XLT        0.000830
+2015       Edge     4dr Wgn SEL        0.001255
+           Fusion   4dr Sdn Titanium   0.002333
+
+5 Highest Probabilities in Feb
+                                  mean
+model_year model  alg_trim            
+2015       Fiesta 4dr Sdn S   0.525524
+           Escape 4dr Wgn S   0.423009
+           Fiesta 4dr Sdn SE  0.319115
+           Focus  4dr Sdn SE  0.037850
+           Fusion 4dr Sdn S   0.027332
+
+5 Lowest Probabilities in Feb
+                                             mean
+model_year model   alg_trim                      
+2015       Edge    4dr Wgn Sport AWD     0.002319
+                   4dr Wgn SEL           0.003612
+           Escape  4dr Wgn Titanium 4WD  0.004602
+           Mustang 2dr Cpe               0.005059
+           Escape  4dr Wgn SE 4WD        0.005724
+
+5 Highest Probabilities in Mar
+                                        mean
+model_year model  alg_trim                  
+2015       Fiesta 5dr HB SE         0.360968
+                  4dr Sdn S         0.191477
+           Focus  4dr Sdn S         0.128922
+                  4dr Sdn Titanium  0.114606
+           Escape 4dr Wgn S         0.106723
+
+5 Lowest Probabilities in Mar
+                                                  mean
+model_year model   alg_trim                           
+2015       Mustang 2dr Conv Premium EcoBoost  0.001981
+                   2dr Cpe EcoBoost           0.002198
+           Edge    4dr Wgn Sport AWD          0.002468
+                   4dr Wgn SEL                0.003532
+           Mustang 2dr Cpe                    0.004591
+
+5 Highest Probabilities in Jul
+                                         mean
+model_year model  alg_trim                   
+2015       Fiesta 4dr Sdn SE         0.835311
+           Focus  5dr HB SE          0.649227
+           Fiesta 4dr Sdn S          0.567546
+           Focus  4dr Sdn S          0.472821
+           Fusion 4dr Sdn Hybrid SE  0.382379
+
+5 Lowest Probabilities in Jul
+                                          mean
+model_year model    alg_trim                  
+2015       Edge     4dr Wgn SEL       0.013473
+2016       Fusion   4dr Sdn SE        0.019564
+2015       Fusion   4dr Sdn Titanium  0.021153
+2016       Focus    4dr Sdn SE        0.026195
+2015       Explorer 4dr Wgn XLT 4WD   0.040653
+
+5 Highest Probabilities in Sep
+                                         mean
+model_year model  alg_trim                   
+2016       Focus  5dr HB SE          0.805964
+2015       Fusion 4dr Sdn Hybrid SE  0.737461
+           Fiesta 5dr HB SE          0.716205
+           Escape 4dr Wgn S          0.385496
+           Fiesta 4dr Sdn SE         0.280805
+
+5 Lowest Probabilities in Sep
+                                          mean
+model_year model        alg_trim              
+2017       Focus        4dr Sdn SE    0.003035
+           Explorer     4dr Wgn Base  0.003386
+2015       C-Max Hybrid 5dr HB SE     0.006630
+2016       Explorer     4dr Wgn Base  0.008251
+2017       Fiesta       5dr HB SE     0.008666
+
+San Francisco Bay Area CANVAS 2.0 CAR PERFORMANCE BY MONTH
+
+5 Highest Probabilities in Dec
+                                                   mean
+model_year model    alg_trim                           
+2016       Mustang  2dr Conv Premium EcoBoost  0.375223
+           Escape   4dr Wgn Titanium 4WD       0.356519
+           Explorer 4dr Wgn Sport 4WD          0.191649
+2015       Fiesta   4dr Sdn SE                 0.188012
+2017       Focus    4dr Sdn SE                 0.184403
+
+5 Lowest Probabilities in Dec
+                                          mean
+model_year model   alg_trim                   
+2016       Fusion  4dr Sdn Titanium   0.004437
+                   4dr Sdn Hybrid SE  0.005278
+           Mustang 2dr Conv           0.005990
+           Fiesta  5dr HB SE          0.006700
+           Fusion  4dr Sdn SE         0.008002
+
+5 Highest Probabilities in Apr
+                                  mean
+model_year model  alg_trim            
+2015       Fiesta 4dr Sdn SE  0.157648
+           Escape 4dr Wgn S   0.137225
+           Focus  4dr Sdn S   0.133839
+                  5dr HB SE   0.132843
+                  4dr Sdn SE  0.125368
+
+5 Lowest Probabilities in Apr
+                                           mean
+model_year model    alg_trim                   
+2015       Mustang  2dr Conv           0.003743
+           Flex     4dr Wgn SEL        0.005611
+           F-150    SuperCab XLT 4WD   0.007610
+           Explorer 4dr Wgn Sport 4WD  0.007814
+           F-150    SuperCrew XLT      0.008541
+
+5 Highest Probabilities in May
+                                        mean
+model_year model        alg_trim            
+2015       Focus        4dr Sdn S   0.607032
+                        5dr HB SE   0.561874
+           C-Max Hybrid 5dr HB SE   0.526950
+           Focus        4dr Sdn SE  0.502665
+           Fiesta       4dr Sdn SE  0.439237
+
+5 Lowest Probabilities in May
+                                         mean
+model_year model   alg_trim                  
+2015       Taurus  4dr Sdn SHO AWD   0.009237
+           Mustang 2dr Cpe EcoBoost  0.016838
+           Taurus  4dr Sdn SEL       0.021184
+           F-150   SuperCab XLT 4WD  0.022674
+           Edge    4dr Wgn SEL       0.028124
+
+5 Highest Probabilities in Jun
+                                           mean
+model_year model    alg_trim                   
+2015       Fiesta   4dr Sdn SE         0.786506
+           Focus    4dr Sdn S          0.662385
+                    5dr HB SE          0.552977
+           Fusion   4dr Sdn Hybrid SE  0.509822
+           Explorer 4dr Wgn Base       0.479792
+
+5 Lowest Probabilities in Jun
+                                           mean
+model_year model alg_trim                      
+2015       F-150 SuperCrew XLT 4WD     0.015345
+                 SuperCrew XLT         0.016457
+           Edge  4dr Wgn Sport         0.024499
+                 4dr Wgn SEL           0.027631
+                 4dr Wgn Titanium AWD  0.029244
+
+5 Highest Probabilities in Aug
+                                       mean
+model_year model  alg_trim                 
+2015       Focus  4dr Sdn S        0.490427
+                  5dr HB SE        0.480069
+                  5dr HB Titanium  0.478674
+           Fiesta 5dr HB SE        0.408518
+           Focus  4dr Sdn SE       0.347962
+
+5 Lowest Probabilities in Aug
+                                                 mean
+model_year model   alg_trim                          
+2016       Fusion  4dr Sdn SE                0.024852
+2015       Mustang 2dr Conv GT Premium       0.026374
+           Escape  4dr Wgn SE 4WD            0.036431
+           Mustang 2dr Cpe Premium EcoBoost  0.036673
+           F-150   SuperCrew XLT 4WD         0.044823
+
+5 Highest Probabilities in Oct
+                                  mean
+model_year model  alg_trim            
+2015       Focus  4dr Sdn S   0.785856
+           Fiesta 4dr Sdn S   0.624503
+                  5dr HB S    0.571190
+           Fusion 4dr Sdn S   0.550069
+           Fiesta 4dr Sdn SE  0.496770
+
+5 Lowest Probabilities in Oct
+                                               mean
+model_year model        alg_trim                   
+2016       C-Max Hybrid 5dr HB SEL         0.002909
+2015       F-150        SuperCrew XLT 4WD  0.005083
+2016       Explorer     4dr Wgn Sport 4WD  0.005531
+                        4dr Wgn Limited    0.006036
+2015       F-150        SuperCrew XLT      0.007092
+
+5 Highest Probabilities in Nov
+                                               mean
+model_year model  alg_trim                         
+2015       Fiesta 4dr Sdn S                0.813673
+                  4dr Sdn SE               0.702339
+2016       Fusion 4dr Sdn Hybrid Titanium  0.372313
+2015       Fusion 4dr Sdn S                0.363643
+           Focus  4dr Sdn S                0.318314
+
+5 Lowest Probabilities in Nov
+                                              mean
+model_year model        alg_trim                  
+2016       C-Max Hybrid 5dr HB SEL        0.002902
+                        5dr HB SE         0.004324
+           Fusion       4dr Sdn SE        0.005582
+2015       Edge         4dr Wgn SEL       0.006138
+2016       Fusion       4dr Sdn Titanium  0.006630
+
+5 Highest Probabilities in Jan
+                                         mean
+model_year model  alg_trim                   
+2015       Fusion 4dr Sdn Hybrid SE  0.024782
+           Focus  5dr HB SE          0.022362
+           Fusion 4dr Sdn SE         0.017104
+           Escape 4dr Wgn SE         0.009349
+           Focus  4dr Sdn SE         0.008626
+
+5 Lowest Probabilities in Jan
+                                           mean
+model_year model    alg_trim                   
+2016       Explorer 4dr Wgn XLT        0.001190
+           Mustang  2dr Conv           0.001486
+           Fusion   4dr Sdn Hybrid SE  0.002193
+                    4dr Sdn Titanium   0.002193
+2015       F-150    SuperCrew XLT      0.002828
+
+5 Highest Probabilities in Feb
+                                         mean
+model_year model  alg_trim                   
+2015       Fiesta 5dr HB SE          0.784261
+                  4dr Sdn SE         0.744471
+           Focus  4dr Sdn SE         0.501676
+                  5dr HB SE          0.491902
+           Fusion 4dr Sdn Hybrid SE  0.179988
+
+5 Lowest Probabilities in Feb
+                                             mean
+model_year model   alg_trim                      
+2015       Edge    4dr Wgn Sport AWD     0.004887
+           Mustang 2dr Cpe               0.005819
+           Flex    4dr Wgn SEL           0.007659
+           Escape  4dr Wgn Titanium 4WD  0.008076
+                   4dr Wgn SE 4WD        0.008464
+
+5 Highest Probabilities in Mar
+                                         mean
+model_year model  alg_trim                   
+2015       Focus  4dr Sdn S          0.495184
+           Fiesta 4dr Sdn S          0.462849
+           Fusion 4dr Sdn S          0.389639
+                  4dr Sdn Hybrid SE  0.323400
+           Escape 4dr Wgn S          0.273325
+
+5 Lowest Probabilities in Mar
+                                            mean
+model_year model  alg_trim                      
+2015       Edge   4dr Wgn Titanium      0.005470
+           Flex   4dr Wgn SEL           0.005614
+           Edge   4dr Wgn Titanium AWD  0.006996
+                  4dr Wgn SEL           0.007992
+           Taurus 4dr Sdn SEL           0.011099
+
+5 Highest Probabilities in Jul
+                                  mean
+model_year model  alg_trim            
+2015       Fiesta 4dr Sdn S   0.649450
+           Focus  5dr HB SE   0.631125
+                  4dr Sdn S   0.581840
+           Fiesta 5dr HB SE   0.539428
+           Focus  4dr Sdn SE  0.468833
+
+5 Lowest Probabilities in Jul
+                                        mean
+model_year model  alg_trim                  
+2016       Focus  5dr HB Titanium   0.014848
+2015       Edge   4dr Wgn Titanium  0.016128
+2016       Fusion 4dr Sdn SE        0.016409
+2015       Edge   4dr Wgn SEL AWD   0.021764
+                  4dr Wgn SEL       0.025023
+
+5 Highest Probabilities in Sep
+                                  mean
+model_year model  alg_trim            
+2015       Escape 4dr Wgn S   0.511488
+           Focus  4dr Sdn S   0.476507
+           Fusion 4dr Sdn S   0.452747
+           Focus  4dr Sdn SE  0.366743
+                  5dr HB SE   0.328837
+
+5 Lowest Probabilities in Sep
+                                         mean
+model_year model  alg_trim                   
+2015       F-150  SuperCrew XLT 4WD  0.004712
+2016       Fusion 4dr Sdn SE         0.005227
+2015       Edge   4dr Wgn Sport AWD  0.006515
+                  4dr Wgn Titanium   0.006733
+           Flex   4dr Wgn SEL        0.009898

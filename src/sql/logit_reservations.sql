@@ -8,7 +8,7 @@ with
 		, to_char(date_trunc('month', calendar_date_start), 'Mon') as month
 		from public.calendar_dates
 		where calendar_date_start >= '12/14/2017'::date
-			and calendar_date_start <= getdate()
+			and calendar_date_start::date < convert_timezone('America/Los_angeles', getdate())::date - interval '7 days'
 	)
 
 ,	campaign_spend as (
@@ -26,7 +26,7 @@ with
 	)
 
 , availabilities as (
-		select 'Available' as on_website, c.vin
+		select 'Available'::text as on_website, c.vin
 		,	convert_timezone('America/Los_angeles', start_at) as start_at_pt
 		,	convert_timezone('America/Los_angeles', end_at) as end_at_pt
 		,	c.model_year, c.make, c.model, c.alg_trim
@@ -71,23 +71,25 @@ with
 		, model_year || ' ' || make || ' ' || model || ' ' || alg_trim as car_long_name
 		, s.version
 		, convert_timezone('America/Los_angeles', s.created_at) as pricing_start_pt
-		, lead(convert_timezone('America/Los_angeles', s.created_at))
-				over (partition by model_year, make, model, alg_trim order by s.created_at) as pricing_end_pt
+		, coalesce(lead(convert_timezone('America/Los_angeles', s.created_at)) over
+								(partition by model_year, make, model, alg_trim order by s.created_at),
+								 convert_timezone('America/Los_angeles', getdate())) as pricing_end_pt
 		from rome.fixed_pricing_items f
 		left join rome.fixed_pricing_schedules s on s.id = f.fixed_pricing_schedule_id
 		where period = 0
 			and s.version is not null
 	)
 
-select d.*
+select distinct d.*
 , a.region, a.on_website
 , a.vin, a.make, a.model, a.model_year, a.alg_trim
 , a.body_type, a.trim, a.drivetrain, a.color
-, a.is_hybrid, a.is_s, a.is_se, a.is_titanium
+, a.is_hybrid--, a.is_s, a.is_se, a.is_titanium
 , case when d.date_start < '2/28/2018'::date then 0 else 1 end as is_canvas_2_0
 , coalesce(r.is_reserved, 0) as is_reserved
-, coalesce(c.spend, 0) as daily_spend
+, round(coalesce(c.spend, 0), 2) as daily_spend
 , count(a.vin) over (partition by a.region, date_start) as number_available_cars
+, count(a.vin) over (partition by a.model, a.region, date_start) as number_available_model
 , v.vehicle_fee
 , min(v.vehicle_fee) over (partition by a.region, date_start) as min_vehicle_fee
 , avg(v.vehicle_fee) over (partition by a.region, date_start) as avg_vehicle_fee

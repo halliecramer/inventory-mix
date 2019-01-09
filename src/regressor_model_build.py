@@ -45,7 +45,7 @@ class Reservations(object):
         '''Imports user data directly from redshift,
            formats, scales for modelling'''
 
-        with open('sql/reservations.sql','r') as f:
+        with open('sql/count_reservations.sql','r') as f:
             sql = f.read()
         df = pd.read_sql(sql, self.con)
 

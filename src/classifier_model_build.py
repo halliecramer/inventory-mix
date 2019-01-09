@@ -40,20 +40,21 @@ class Reservations(object):
         self.y_test = None
         self.y_pred = None
         self.features = None
+        self.con = None
 
     def _get_data(self):
         '''Imports user data directly from redshift,
            formats, scales for scoring'''
 
-        with open('sql/inventory_mix.sql','r') as f:
+        with open('sql/logit_reservations.sql','r') as f:
             sql = f.read()
-        con = psycopg2.connect(dbname=config.redshift['dbname'],
-                                host=config.redshift['host'],
-                                port=config.redshift['port'],
-                                user=config.redshift['user'],
-                                password=config.redshift['password'])
-        df = pd.read_sql(sql, con)
-        con.close()
+        self.con = psycopg2.connect(dbname=config.redshift['dbname'],
+                                    host=config.redshift['host'],
+                                    port=config.redshift['port'],
+                                    user=config.redshift['user'],
+                                    password=config.redshift['password'])
+        df = pd.read_sql(sql, self.con)
+        self.con.close()
         # model_list = ['Focus','Fusion','Fiesta','Escape','C-Max Hybrid','Explorer','Edge','Mustang']
         # for var in model_list:
         #     daily_counts = df[df['model']==var].groupby(['date_start','region'])['vin'].count().reset_index()
@@ -77,7 +78,7 @@ class Reservations(object):
                     # 'focus_count', 'fusion_count', 'fiesta_count', 'escape_count',
                     # 'c-max hybrid_count', 'explorer_count', 'edge_count', 'mustang_count',
                     'is_weekend', 'is_holiday', 'vehicle_fee', 'is_neutral_color',
-                    'min_vehicle_fee', 'is_apr_thru_jul']
+                    'min_vehicle_fee', 'is_apr_thru_jul', 'number_available_model']
         cat_cols = ['region', 'model', 'model_year']
         date_cols = ['date_start']
         dummy_list = []
@@ -261,10 +262,10 @@ class Reservations(object):
         self.X_train, self.X_test, self.y_train, self.y_test = self._split_data(oversample=oversample, scale=scale)
         if model == 'gb':
             m = GradientBoostingClassifier()
-            param_grid = {"max_features" : ['sqrt', 'auto'],
+            param_grid = {"max_features" : ['sqrt'],
                           "n_estimators" : [100],
-                          "max_depth" : [10, 25],
-                          "min_samples_leaf" : [3, 10],
+                          "max_depth" : [10, 15],
+                          "min_samples_leaf" : [3, 5, 8],
                           "learning_rate" : [0.1]}
         elif model == 'rf':
             m = RandomForestClassifier()
@@ -288,7 +289,7 @@ class Reservations(object):
 if __name__ == '__main__':
     try:
         model = Reservations()
-        model.fit_model(model='rf', info=True, roc=False, reliability=False, pickle=True, permutation_feat=True)
+        model.fit_model(model='gb', info=True, roc=False, reliability=False, pickle=False, min_samples_leaf=3, max_depth=10)
         # model.grid_search(model='gb', oversample=True, scale=False, scoring='f1')
 
     except IndexError:
